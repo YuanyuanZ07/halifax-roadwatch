@@ -22,52 +22,59 @@ function markerClass(issue) {
 
 export default function HomePage() {
   return (
-    <section>
-      <h1 className="homeTitle">Halifax RoadWatch</h1>
-      <p className="lede">
-        An early-stage community prototype for reporting road issues in Halifax.
-        Use the tabs above to submit a report, view the map, and check status
-        updates.
-      </p>
-
-      <a
-        href="/map"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mapPreview"
-        aria-label="Open the full interactive map"
+    <>
+      {/* ── Hero banner ── */}
+      <div
+        className="hero"
+        style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/Nav_Picture.jpg)` }}
       >
-        {/* Simulated road grid */}
-        <div className="mapGrid">
-          <span className="mapRoadH" style={{ top: "30%" }} />
-          <span className="mapRoadH" style={{ top: "60%" }} />
-          <span className="mapRoadV" style={{ left: "25%" }} />
-          <span className="mapRoadV" style={{ left: "55%" }} />
-          <span className="mapRoadV" style={{ left: "80%" }} />
+        <div className="heroOverlay" />
+        <div className="heroContent">
+          <h1 className="heroTitle">Halifax RoadWatch</h1>
+          <p className="heroSubtitle">
+            Report road issues. Help your community. Stay safe on Halifax streets.
+          </p>
         </div>
+      </div>
 
-        {/* Issue markers */}
-        {SAMPLE_ISSUES.map((issue) => (
-          <span
-            key={issue.id}
-            className={markerClass(issue)}
-            style={{ top: `${issue.y}%`, left: `${issue.x}%` }}
-          />
-        ))}
+      {/* ── Map preview section ── */}
+      <section className="container homeSection">
+        <a
+          href="/map"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mapPreview"
+          aria-label="Open the full interactive map"
+        >
+          <div className="mapGrid">
+            <span className="mapRoadH" style={{ top: "30%" }} />
+            <span className="mapRoadH" style={{ top: "60%" }} />
+            <span className="mapRoadV" style={{ left: "25%" }} />
+            <span className="mapRoadV" style={{ left: "55%" }} />
+            <span className="mapRoadV" style={{ left: "80%" }} />
+          </div>
 
-        {/* Legend */}
-        <div className="mapLegend">
-          <div className="legendTitle">Legend</div>
-          <div className="legendRow"><span className="legendSwatch marker-circle marker-red" />High severity</div>
-          <div className="legendRow"><span className="legendSwatch marker-circle marker-orange" />Medium severity</div>
-          <div className="legendRow"><span className="legendSwatch marker-circle marker-yellow" />Low severity</div>
-          <div className="legendRow"><span className="legendSwatch marker-square marker-blue" />Streetlight issue</div>
-          <div className="legendRow"><span className="legendSwatch marker-triangle marker-green" />Public building</div>
-        </div>
+          {SAMPLE_ISSUES.map((issue) => (
+            <span
+              key={issue.id}
+              className={markerClass(issue)}
+              style={{ top: `${issue.y}%`, left: `${issue.x}%` }}
+            />
+          ))}
 
-        <span className="mapLabel">Halifax Road Reports</span>
-      </a>
-      <p className="mapCaption">Click to open the full interactive map</p>
-    </section>
+          <div className="mapLegend">
+            <div className="legendTitle">Legend</div>
+            <div className="legendRow"><span className="legendSwatch marker-circle marker-red" />High severity</div>
+            <div className="legendRow"><span className="legendSwatch marker-circle marker-orange" />Medium severity</div>
+            <div className="legendRow"><span className="legendSwatch marker-circle marker-yellow" />Low severity</div>
+            <div className="legendRow"><span className="legendSwatch marker-square marker-blue" />Streetlight issue</div>
+            <div className="legendRow"><span className="legendSwatch marker-triangle marker-green" />Public building</div>
+          </div>
+
+          <span className="mapLabel">Halifax Road Reports</span>
+        </a>
+        <p className="mapCaption">Click to open the full interactive map</p>
+      </section>
+    </>
   );
 }

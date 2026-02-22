@@ -21,6 +21,16 @@ body {
 .siteHeader {
   background: var(--hrw-blue);
   color: #ffffff;
+  position: relative;
+  z-index: 10;
+}
+
+.siteHeader--transparent {
+  background: transparent;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
 }
 
 .headerInner {
@@ -69,6 +79,50 @@ body {
   margin: 0 0 12px;
   font-size: 44px;
   line-height: 1.1;
+}
+
+/* ---- Hero banner (Home) ---- */
+
+.hero {
+  position: relative;
+  height: 420px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.heroContent {
+  position: relative;
+  text-align: center;
+  color: #fff;
+  padding: 0 16px;
+}
+
+.heroTitle {
+  margin: 0 0 12px;
+  font-size: 48px;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+.heroSubtitle {
+  margin: 0;
+  font-size: 18px;
+  max-width: 500px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.homeSection {
+  padding: 32px 16px;
 }
 
 .pageTitle {
@@ -444,4 +498,334 @@ body {
   border: 1px dashed #c8ced6;
   border-radius: 6px;
   text-align: center;
+}
+
+/* ---- Report page ---- */
+
+.rp-page {
+  max-width: 100%;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.rp-main {
+  flex: 1;
+  min-width: 0;
+  max-width: 560px;
+}
+
+/* Safety notice */
+.rp-notice {
+  margin: 12px 0 18px;
+  padding: 10px 14px;
+  background: #fff3cd;
+  border: 1px solid #e2c465;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #664d03;
+}
+
+/* Mode tabs */
+.rp-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 20px;
+}
+
+.rp-tab {
+  flex: 1;
+  padding: 10px 0;
+  border: 1px solid #c8ced6;
+  background: #f5f7fa;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.rp-tab:first-child { border-radius: 4px 0 0 4px; }
+.rp-tab:last-child  { border-radius: 0 4px 4px 0; border-left: none; }
+
+.rp-tabActive {
+  background: var(--hrw-blue);
+  color: #fff;
+  border-color: var(--hrw-blue);
+}
+
+.rp-tabHint {
+  font-size: 12px;
+  opacity: 0.75;
+  margin-left: 4px;
+}
+
+/* Form */
+.rp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rp-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.rp-req {
+  color: #d63031;
+}
+
+.rp-opt {
+  font-weight: 400;
+  color: rgba(11, 31, 58, 0.55);
+}
+
+.rp-input {
+  padding: 8px 10px;
+  border: 1px solid #c8ced6;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text);
+  background: #fff;
+}
+
+.rp-input:focus {
+  outline: 2px solid var(--hrw-blue);
+  outline-offset: -1px;
+}
+
+.rp-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.rp-fileInput {
+  font-size: 14px;
+}
+
+/* Location button + messages */
+.rp-locBtn {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border: 1px solid #c8ced6;
+  border-radius: 4px;
+  background: #f5f7fa;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.rp-locBtn:hover {
+  border-color: var(--hrw-blue);
+}
+
+.rp-locMsg {
+  margin: -8px 0 0;
+  font-size: 13px;
+}
+
+.rp-locOk  { color: #1e6e1e; }
+.rp-locErr { color: #c0392b; }
+
+/* Submit / primary button */
+.rp-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text);
+  background: #eef1f5;
+}
+
+.rp-btnSubmit {
+  background: var(--hrw-blue);
+  color: #fff;
+}
+
+.rp-btnSubmit:hover {
+  opacity: 0.9;
+}
+
+.rp-btnSubmit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Success card */
+.rp-success {
+  padding: 24px;
+  border: 1px solid #c8ced6;
+  border-radius: 6px;
+  background: #f0faf0;
+  text-align: center;
+}
+
+.rp-success h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #1e6e1e;
+}
+
+.rp-success p {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+/* Section title between quick card and full form */
+.rp-sectionTitle {
+  margin: 28px 0 8px;
+  font-size: 20px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #eef1f5;
+}
+
+/* ---- Quick Pothole card ---- */
+.qp-card {
+  margin: 16px 0 0;
+  padding: 18px 20px;
+  border: 1px solid var(--hrw-blue);
+  border-radius: 6px;
+  background: #f0f6fd;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.qp-heading {
+  margin: 0;
+  font-size: 18px;
+}
+
+.qp-safety {
+  margin: 0;
+  font-size: 13px;
+  color: #664d03;
+  background: #fff3cd;
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+.qp-startBtn {
+  align-self: flex-start;
+}
+
+.qp-msg {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(11, 31, 58, 0.65);
+}
+
+.qp-coords {
+  margin: 0;
+  font-size: 14px;
+  color: #1e6e1e;
+}
+
+/* ---- Mobile Companion promo ---- */
+
+.mc-card {
+  flex: 0 0 220px;
+  position: sticky;
+  top: 80px;
+  padding: 16px;
+  border: 1px solid #c8ced6;
+  border-radius: 6px;
+  background: #f9fbfd;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mc-title {
+  margin: 0;
+  font-size: 15px;
+}
+
+.mc-desc {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(11, 31, 58, 0.72);
+}
+
+.mc-safety {
+  margin: 0;
+  font-size: 12px;
+  color: #664d03;
+}
+
+.mc-btn {
+  font-size: 13px;
+  padding: 8px 12px;
+}
+
+/* Modal */
+.mc-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.mc-modal {
+  background: #fff;
+  border-radius: 8px;
+  padding: 28px 28px 20px;
+  max-width: 440px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mc-modalTitle {
+  margin: 0;
+  font-size: 20px;
+}
+
+.mc-option {
+  font-size: 14px;
+}
+
+.mc-option p {
+  margin: 2px 0 0;
+  color: rgba(11, 31, 58, 0.7);
+}
+
+.mc-pwaHelp {
+  background: #f0f6fd;
+  border: 1px solid #c8ced6;
+  border-radius: 4px;
+  padding: 12px 14px;
+  font-size: 13px;
+}
+
+.mc-pwaHelp h4 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.mc-pwaHelp ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.mc-pwaHelp li {
+  margin-bottom: 4px;
+}
+
+.mc-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
