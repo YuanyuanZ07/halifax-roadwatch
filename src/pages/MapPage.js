@@ -1,3 +1,8 @@
 export default function MapPage() {
-  return <h2>Map</h2>;
+  return (
+    <section>
+      <h1 className="pageTitle">Map</h1>
+      <p className="placeholder">Coming soon.</p>
+    </section>
+  );
 }

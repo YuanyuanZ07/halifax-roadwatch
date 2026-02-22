@@ -1,7 +1,7 @@
-export default function ReportPage() {
+export default function UpdatesPage() {
   return (
     <section>
-      <h1 className="pageTitle">Report an issue</h1>
+      <h1 className="pageTitle">Updates</h1>
       <p className="placeholder">Coming soon.</p>
     </section>
   );

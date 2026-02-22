@@ -1,38 +1,87 @@
-.App {
-  text-align: center;
+:root {
+  --hrw-blue: #0057b8;
+  --text: rgba(11, 31, 58, 0.95);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body {
+  background: #ffffff;
+  color: var(--text);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+.appShell {
   min-height: 100vh;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.siteHeader {
+  background: var(--hrw-blue);
+  color: #ffffff;
+}
+
+.headerInner {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0;
 }
 
-.App-link {
-  color: #61dafb;
+.siteName {
+  font-weight: 700;
+  letter-spacing: 0.2px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.navLink {
+  color: rgba(255, 255, 255, 0.92);
+  text-decoration: none;
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.navLink:hover {
+  text-decoration: underline;
+}
+
+.navLinkActive {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.main {
+  padding: 24px 0;
+}
+
+.homeTitle {
+  margin: 0 0 12px;
+  font-size: 44px;
+  line-height: 1.1;
+}
+
+.pageTitle {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+
+.lede {
+  margin: 0;
+  max-width: 65ch;
+  color: rgba(11, 31, 58, 0.82);
+}
+
+.placeholder {
+  margin: 0;
+  color: rgba(11, 31, 58, 0.75);
 }
