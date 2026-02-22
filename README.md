@@ -7,7 +7,8 @@ This project is an independent prototype and is not affiliated with the Halifax 
 
 ## 1. Home Page
 
-   <img width="1320" height="826" alt="image" src="https://github.com/user-attachments/assets/6394e0c2-423c-48cc-aa78-9097eebce649" />
+   <img width="1367" height="862" alt="image" src="https://github.com/user-attachments/assets/321d535b-49d5-4b13-bc7f-07da76878c21" />
+
 
 
 ## 2. Map Page
@@ -16,5 +17,7 @@ This project is an independent prototype and is not affiliated with the Halifax 
 
 
 ## 3. Report Page
+
+   <img width="957" height="843" alt="image" src="https://github.com/user-attachments/assets/f9d6436e-b97b-49b8-949d-399dcfc5baf8" />
 
 
