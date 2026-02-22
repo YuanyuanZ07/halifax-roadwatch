@@ -1,25 +1,16 @@
-import logo from './logo.svg';
-import './App.css';
+import HomePage from "./pages/HomePage";
+import ReportPage from "./pages/ReportPage";
+import MapPage from "./pages/MapPage";
+import AdminPage from "./pages/AdminPage";
 
-function App() {
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Halifax RoadWatch</h1>
+      <HomePage />
+      <ReportPage />
+      <MapPage />
+      <AdminPage />
     </div>
   );
 }
-
-export default App;
