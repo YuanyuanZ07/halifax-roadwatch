@@ -1,55 +1,201 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import mockIssues from "../data/mockIssues";
 
-/* ── Fake issue data ── */
-const ISSUES = [
-  { id: 1,  type: "pothole",     severity: "high",   status: "reported",    title: "Deep pothole on Barrington St",    locationText: "Barrington St & Sackville St",  x: 22, y: 25 },
-  { id: 2,  type: "pothole",     severity: "medium", status: "in_progress", title: "Cracked pavement near Spring Garden", locationText: "Spring Garden Rd",            x: 52, y: 55 },
-  { id: 3,  type: "pothole",     severity: "low",    status: "resolved",    title: "Minor surface crack",              locationText: "Quinpool Rd",                    x: 74, y: 38 },
-  { id: 4,  type: "pothole",     severity: "high",   status: "reported",    title: "Sinkhole forming on Robie St",     locationText: "Robie St near Commons",          x: 35, y: 68 },
-  { id: 5,  type: "streetlight", severity: null,      status: "reported",    title: "Flickering streetlight",           locationText: "Gottingen St & Cogswell St",     x: 60, y: 20 },
-  { id: 6,  type: "streetlight", severity: null,      status: "in_progress", title: "Broken lamp post",                locationText: "North Park St",                  x: 42, y: 75 },
-  { id: 7,  type: "building",    severity: null,      status: "reported",    title: "Crumbling steps at community centre", locationText: "Halifax North Memorial Library", x: 80, y: 48 },
-  { id: 8,  type: "building",    severity: null,      status: "resolved",    title: "Damaged railing at rec centre",   locationText: "Needham Centre",                 x: 18, y: 58 },
-  { id: 9,  type: "pothole",     severity: "medium", status: "reported",    title: "Rough patch on South St",          locationText: "South St near Inglis",           x: 48, y: 42 },
-  { id: 10, type: "streetlight", severity: null,      status: "resolved",    title: "Light out near waterfront",        locationText: "Lower Water St",                 x: 30, y: 32 },
-];
+// Center the map on Halifax, Nova Scotia
+const HALIFAX_CENTER = [44.6488, -63.5752];
+const DEFAULT_ZOOM = 13;
 
-const STATUS_LABELS = { reported: "Reported", in_progress: "In progress", resolved: "Resolved" };
-const TYPE_LABELS   = { pothole: "Road damage", streetlight: "Streetlight", building: "Building" };
+// Human-readable labels for status and category values
+const STATUS_LABELS = {
+  reported: "Reported",
+  in_progress: "In progress",
+  resolved: "Resolved",
+};
 
-function markerClass(issue) {
-  if (issue.type === "pothole") {
-    const c = issue.severity === "high" ? "red" : issue.severity === "medium" ? "orange" : "yellow";
-    return `marker marker-circle marker-${c}`;
+const CATEGORY_LABELS = {
+  road: "Road damage",
+  streetlight: "Streetlight",
+  building: "Building",
+};
+
+// Build a small colored circle icon for the map marker.
+// Selected markers are slightly bigger with a blue border.
+function createIcon(color, isSelected) {
+  let size = 14;
+  let border = "2px solid #fff";
+
+  if (isSelected) {
+    size = 20;
+    border = "3px solid #0057b8";
   }
-  if (issue.type === "streetlight") return "marker marker-square marker-blue";
-  if (issue.type === "building")    return "marker marker-triangle marker-green";
-  return "marker";
+
+  return L.divIcon({
+    className: "",
+    html: `<div style="
+      width: ${size}px;
+      height: ${size}px;
+      background: ${color};
+      border: ${border};
+      border-radius: 50%;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    "></div>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+  });
+}
+
+// Pick a color based on issue category and severity.
+// Road issues: red (high), orange (medium), yellow (low).
+// Streetlight: blue. Building: green.
+function getMarkerColor(issue) {
+  if (issue.category === "road") {
+    if (issue.severity === "high") return "#d63031";
+    if (issue.severity === "medium") return "#e67e22";
+    return "#f1c40f";
+  }
+  if (issue.category === "streetlight") return "#2e86de";
+  if (issue.category === "building") return "#27ae60";
+  return "#888";
+}
+
+// Purple pulsing icon used for the "draft pin" (click-to-place marker)
+const draftIcon = L.divIcon({
+  className: "",
+  html: `<div style="
+    width: 22px;
+    height: 22px;
+    background: #8e44ad;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    animation: pulse 1.5s infinite;
+  "></div>`,
+  iconSize: [22, 22],
+  iconAnchor: [11, 11],
+});
+
+// Filter issues based on the current search text, category checkboxes,
+// status dropdown, and severity dropdown.
+function filterIssues(issues, search, categories, status, severity) {
+  const searchLower = search.toLowerCase();
+
+  return issues.filter(function (issue) {
+    // Category checkbox must be checked
+    if (!categories[issue.category]) return false;
+
+    // Status dropdown (skip if "all")
+    if (status !== "all" && issue.status !== status) return false;
+
+    // Severity dropdown (skip if "all")
+    if (severity !== "all" && issue.severity !== severity) return false;
+
+    // Search text — check title and location
+    if (searchLower) {
+      const titleMatch = issue.title.toLowerCase().includes(searchLower);
+      const locationMatch = issue.locationText.toLowerCase().includes(searchLower);
+      if (!titleMatch && !locationMatch) return false;
+    }
+
+    return true;
+  });
+}
+
+// This small component listens for clicks on the Leaflet map.
+// react-leaflet requires useMapEvents to be inside <MapContainer>.
+function MapClickHandler({ onMapClick }) {
+  useMapEvents({
+    click: function (e) {
+      onMapClick(e.latlng);
+    },
+  });
+  return null;
 }
 
 export default function MapPage() {
-  const [search, setSearch]       = useState("");
-  const [types, setTypes]         = useState({ pothole: true, streetlight: true, building: true });
-  const [status, setStatus]       = useState("all");
-  const [severity, setSeverity]   = useState("all");
+  const navigate = useNavigate();
+  const listRef = useRef(null);
+
+  // --- Filter state ---
+  const [search, setSearch] = useState("");
+  const [categories, setCategories] = useState({
+    road: true,
+    streetlight: true,
+    building: true,
+  });
+  const [status, setStatus] = useState("all");
+  const [severity, setSeverity] = useState("all");
+
+  // --- Selection & draft pin ---
   const [selectedId, setSelectedId] = useState(null);
+  const [draftPin, setDraftPin] = useState(null); // { lat, lng } or null
 
-  /* ── Filtering ── */
-  const filtered = useMemo(() => {
-    const q = search.toLowerCase();
-    return ISSUES.filter((i) => {
-      if (!types[i.type]) return false;
-      if (status !== "all" && i.status !== status) return false;
-      if (severity !== "all" && i.type === "pothole" && i.severity !== severity) return false;
-      if (q && !i.title.toLowerCase().includes(q) && !i.locationText.toLowerCase().includes(q)) return false;
-      return true;
+  // Build filtered list whenever filters change
+  const filtered = useMemo(
+    function () {
+      return filterIssues(mockIssues, search, categories, status, severity);
+    },
+    [search, categories, status, severity]
+  );
+
+  // Find the full issue object for the selected marker
+  const selected = mockIssues.find(function (issue) {
+    return issue.id === selectedId;
+  }) || null;
+
+  // Toggle one category checkbox on/off
+  function toggleCategory(cat) {
+    setCategories(function (prev) {
+      return { ...prev, [cat]: !prev[cat] };
     });
-  }, [search, types, status, severity]);
+  }
 
-  const selected = ISSUES.find((i) => i.id === selectedId) || null;
+  // When a marker or list item is clicked, select it and scroll the list
+  function handleSelect(id) {
+    setSelectedId(id);
+    setDraftPin(null); // clear draft pin when selecting an existing issue
 
-  function toggleType(t) {
-    setTypes((prev) => ({ ...prev, [t]: !prev[t] }));
+    // Scroll the matching list item into view
+    if (listRef.current) {
+      const el = listRef.current.querySelector('[data-issue-id="' + id + '"]');
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+  }
+
+  // When the map background is clicked, place a draft pin at that spot
+  function handleMapClick(latlng) {
+    setDraftPin({ lat: latlng.lat, lng: latlng.lng });
+    setSelectedId(null); // deselect any issue
+  }
+
+  // Navigate to the report page with the draft pin coordinates
+  function handleUseLocation() {
+    if (!draftPin) return;
+    navigate(
+      "/report?lat=" + draftPin.lat.toFixed(5) + "&lng=" + draftPin.lng.toFixed(5)
+    );
+  }
+
+  // Return the CSS class string for the small colored dot in the issue list
+  function getDotClass(issue) {
+    if (issue.category === "road") {
+      let colorName = "yellow"; // default for low severity
+      if (issue.severity === "high") colorName = "red";
+      if (issue.severity === "medium") colorName = "orange";
+      return "mp-listDot marker marker-circle marker-" + colorName;
+    }
+    if (issue.category === "streetlight") {
+      return "mp-listDot marker marker-square marker-blue";
+    }
+    if (issue.category === "building") {
+      return "mp-listDot marker marker-triangle marker-green";
+    }
+    return "mp-listDot";
   }
 
   return (
@@ -67,10 +213,10 @@ export default function MapPage() {
         />
 
         <div className="mp-checks">
-          {Object.keys(TYPE_LABELS).map((t) => (
-            <label key={t} className="mp-checkLabel">
-              <input type="checkbox" checked={types[t]} onChange={() => toggleType(t)} />
-              {TYPE_LABELS[t]}
+          {Object.keys(CATEGORY_LABELS).map((cat) => (
+            <label key={cat} className="mp-checkLabel">
+              <input type="checkbox" checked={categories[cat]} onChange={() => toggleCategory(cat)} />
+              {CATEGORY_LABELS[cat]}
             </label>
           ))}
         </div>
@@ -90,18 +236,34 @@ export default function MapPage() {
         </select>
       </div>
 
+      {/* Draft pin info bar */}
+      {draftPin && (
+        <div className="mp-draftBar">
+          <span>
+            📍 Selected location: {draftPin.lat.toFixed(4)}, {draftPin.lng.toFixed(4)}
+          </span>
+          <button className="mp-draftBtn" onClick={handleUseLocation}>
+            Use this location
+          </button>
+          <button className="mp-draftClear" onClick={() => setDraftPin(null)}>
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* ── Two-column body ── */}
       <div className="mp-body">
         {/* Left: issue list */}
-        <div className="mp-list">
+        <div className="mp-list" ref={listRef}>
           {filtered.length === 0 && <p className="mp-empty">No issues match your filters.</p>}
           {filtered.map((issue) => (
             <button
               key={issue.id}
+              data-issue-id={issue.id}
               className={`mp-listItem${selectedId === issue.id ? " mp-listItemActive" : ""}`}
-              onClick={() => setSelectedId(issue.id)}
+              onClick={() => handleSelect(issue.id)}
             >
-              <span className={`mp-listDot ${markerClass(issue)}`} />
+              <span className={getDotClass(issue)} />
               <div className="mp-listText">
                 <strong>{issue.title}</strong>
                 <small>{issue.locationText}</small>
@@ -113,32 +275,55 @@ export default function MapPage() {
           ))}
         </div>
 
-        {/* Right: map + details */}
+        {/* Right: Leaflet map + details */}
         <div className="mp-right">
           <div className="mp-map">
-            {/* Road grid */}
-            <div className="mapGrid">
-              <span className="mapRoadH" style={{ top: "30%" }} />
-              <span className="mapRoadH" style={{ top: "60%" }} />
-              <span className="mapRoadV" style={{ left: "25%" }} />
-              <span className="mapRoadV" style={{ left: "55%" }} />
-              <span className="mapRoadV" style={{ left: "80%" }} />
-            </div>
-
-            {/* Markers */}
-            {filtered.map((issue) => (
-              <span
-                key={issue.id}
-                className={`${markerClass(issue)}${selectedId === issue.id ? " marker-selected" : ""}`}
-                style={{ top: `${issue.y}%`, left: `${issue.x}%`, cursor: "pointer", zIndex: selectedId === issue.id ? 5 : 1 }}
-                onClick={() => setSelectedId(issue.id)}
+            <MapContainer
+              center={HALIFAX_CENTER}
+              zoom={DEFAULT_ZOOM}
+              style={{ width: "100%", height: "100%" }}
+              scrollWheelZoom={true}
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-            ))}
 
-            {/* Legend */}
+              {/* Click handler for draft pin */}
+              <MapClickHandler onMapClick={handleMapClick} />
+
+              {/* Issue markers */}
+              {filtered.map((issue) => (
+                <Marker
+                  key={issue.id}
+                  position={[issue.lat, issue.lng]}
+                  icon={createIcon(getMarkerColor(issue), selectedId === issue.id)}
+                  eventHandlers={{ click: () => handleSelect(issue.id) }}
+                >
+                  <Popup>
+                    <strong>{issue.title}</strong>
+                    <br />
+                    <small>{issue.locationText}</small>
+                  </Popup>
+                </Marker>
+              ))}
+
+              {/* Draft pin (click-to-drop) */}
+              {draftPin && (
+                <Marker position={[draftPin.lat, draftPin.lng]} icon={draftIcon}>
+                  <Popup>
+                    New report location
+                    <br />
+                    {draftPin.lat.toFixed(4)}, {draftPin.lng.toFixed(4)}
+                  </Popup>
+                </Marker>
+              )}
+            </MapContainer>
+
+            {/* Legend overlay */}
             <div className="mapLegend">
               <div className="legendTitle">Legend</div>
-              <div className="legendRow"><span className="legendSwatch marker-circle marker-red" />High</div>
+              <div className="legendRow"><span className="legendSwatch marker-circle marker-red" />High severity</div>
               <div className="legendRow"><span className="legendSwatch marker-circle marker-orange" />Medium</div>
               <div className="legendRow"><span className="legendSwatch marker-circle marker-yellow" />Low</div>
               <div className="legendRow"><span className="legendSwatch marker-square marker-blue" />Streetlight</div>
@@ -151,14 +336,19 @@ export default function MapPage() {
             <div className="mp-detail">
               <h3 className="mp-detailTitle">{selected.title}</h3>
               <p className="mp-detailMeta">
-                <span>{TYPE_LABELS[selected.type]}</span>
+                <span>{CATEGORY_LABELS[selected.category]}</span>
                 {selected.severity && <span> · Severity: {selected.severity}</span>}
                 <span> · {STATUS_LABELS[selected.status]}</span>
               </p>
-              <p className="mp-detailLoc">{selected.locationText}</p>
+              <p className="mp-detailLoc">📍 {selected.locationText}</p>
+              <p className="mp-detailCoords">
+                Coordinates: {selected.lat.toFixed(4)}, {selected.lng.toFixed(4)}
+              </p>
             </div>
           ) : (
-            <p className="mp-detailHint">Select an issue from the list or the map to view details.</p>
+            <p className="mp-detailHint">
+              Click an issue to see details, or click anywhere on the map to select a location for a new report.
+            </p>
           )}
         </div>
       </div>
