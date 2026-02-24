@@ -148,7 +148,6 @@ body {
   position: relative;
   margin: 28px 0 0;
   height: 380px;
-  background: #eef1f5;
   border: 1px solid #c8ced6;
   border-radius: 6px;
   cursor: pointer;
@@ -158,6 +157,13 @@ body {
 
 .mapPreview:hover {
   border-color: var(--hrw-blue);
+}
+
+/* The IssueMap inside the home preview should fill the wrapper */
+.mapPreview .mp-map {
+  height: 100% !important;
+  border: none;
+  border-radius: 0;
 }
 
 /* Faint road grid lines */

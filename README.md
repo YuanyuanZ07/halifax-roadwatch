@@ -7,19 +7,22 @@ This project is an independent prototype and is not affiliated with the Halifax 
 
 ## 1. Home Page
 
-   <img width="1367" height="862" alt="image" src="https://github.com/user-attachments/assets/321d535b-49d5-4b13-bc7f-07da76878c21" />
+   ![alt text](image-1.png)
 
 
 
 ## 2. Map Page
 
-   <img width="1280" height="861" alt="image" src="https://github.com/user-attachments/assets/1abc724d-e88b-4a5b-9d8b-159ca2585d27" />
+   ![alt text](image-2.png)
+
+
 
 
 ## 3. Report Page
 ![alt text](image.png)
 
    <img width="957" height="843" alt="image" src="https://github.com/user-attachments/assets/f9d6436e-b97b-49b8-949d-399dcfc5baf8" />
+
 
 
 
