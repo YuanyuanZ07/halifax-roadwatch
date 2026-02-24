@@ -21,8 +21,6 @@ This project is an independent prototype and is not affiliated with the Halifax 
 ## 3. Report Page
 ![alt text](image.png)
 
-   <img width="957" height="843" alt="image" src="https://github.com/user-attachments/assets/f9d6436e-b97b-49b8-949d-399dcfc5baf8" />
-
 
 
 
