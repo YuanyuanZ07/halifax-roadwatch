@@ -1,10 +1,25 @@
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 // Center the map on Halifax, Nova Scotia
 const HALIFAX_CENTER = [44.6488, -63.5752];
 const DEFAULT_ZOOM = 13;
+
+// Small helper that tells Leaflet to recalculate its size after mount.
+// This fixes blank tiles when the container size changes (e.g. responsive).
+function MapResizeHandler() {
+  var map = useMap();
+  useEffect(function () {
+    // Short delay so the container has its final size
+    var timer = setTimeout(function () {
+      map.invalidateSize();
+    }, 200);
+    return function () { clearTimeout(timer); };
+  }, [map]);
+  return null;
+}
 
 // Human-readable status labels for popups
 const STATUS_LABELS = {
@@ -74,7 +89,11 @@ export default function IssueMap({
   children,
 }) {
   // Apply defaults
+  // height prop can be a string ("70vh") or a number (480 → "480px")
   var mapHeight = height || "480px";
+  if (typeof mapHeight === "number") {
+    mapHeight = mapHeight + "px";
+  }
   var scrollZoom = interactive !== false; // default true
 
   return (
@@ -89,6 +108,9 @@ export default function IssueMap({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+
+        {/* Recalculate map size after mount */}
+        <MapResizeHandler />
 
         {/* Render a marker for each issue */}
         {issues.map(function (issue) {

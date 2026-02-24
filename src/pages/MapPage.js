@@ -244,7 +244,7 @@ export default function MapPage() {
             issues={filtered}
             selectedIssueId={selectedId}
             onSelectIssue={handleSelect}
-            height="480px"
+            height="70vh"
             interactive={true}
           >
             {/* Click handler for draft pin */}

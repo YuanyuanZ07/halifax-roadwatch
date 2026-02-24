@@ -898,3 +898,139 @@ body {
   gap: 10px;
   flex-wrap: wrap;
 }
+
+/* ================================================================
+   Responsive layout — tablet / mobile
+   ================================================================ */
+
+/* ---- Tablet (≤1024px): tighten widths ---- */
+@media (max-width: 1024px) {
+  .mp-list {
+    flex: 0 0 280px;
+  }
+}
+
+/* ---- Mobile (≤768px) ---- */
+@media (max-width: 768px) {
+
+  /* -- Header & nav -- */
+  .headerInner {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 0;
+  }
+
+  .nav {
+    gap: 10px;
+  }
+
+  .navLink {
+    font-size: 15px;
+    padding: 6px 4px;
+  }
+
+  /* -- Hero (Home) -- */
+  .hero {
+    height: 300px;
+  }
+
+  .heroTitle {
+    font-size: 32px;
+  }
+
+  .heroSubtitle {
+    font-size: 15px;
+  }
+
+  /* -- Home map preview -- */
+  .mapPreview {
+    height: 260px;
+  }
+
+  .mapPreview .mp-map {
+    height: 100% !important;
+  }
+
+  .homeSection {
+    padding: 20px 12px;
+  }
+
+  /* -- Map page toolbar -- */
+  .mp-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mp-search {
+    flex: none;
+    width: 100%;
+  }
+
+  .mp-checks {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .mp-select {
+    width: 100%;
+  }
+
+  /* -- Map page two-column → single column -- */
+  .mp-body {
+    flex-direction: column;
+  }
+
+  /* On mobile put the map first (top), list second (below) */
+  .mp-right {
+    order: -1;
+    width: 100%;
+  }
+
+  .mp-list {
+    flex: none;
+    width: 100%;
+    max-height: 300px;
+  }
+
+  /* Shrink map height on mobile so both map + list fit on screen */
+  .mp-right .mp-map {
+    height: 50vh !important;
+    min-height: 240px;
+  }
+
+  /* Draft bar wraps on narrow screens */
+  .mp-draftBar {
+    flex-wrap: wrap;
+    font-size: 13px;
+  }
+
+  /* Detail card: full width */
+  .mp-detail {
+    padding: 10px 12px;
+  }
+
+  .mp-detailHint {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  /* -- Report page -- */
+  .rp-page {
+    flex-direction: column;
+  }
+
+  .mc-card {
+    flex: none;
+    width: 100%;
+    position: static;
+  }
+
+  /* General container */
+  .container {
+    padding: 0 12px;
+  }
+
+  .pageTitle {
+    font-size: 24px;
+  }
+}
